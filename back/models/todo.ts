@@ -4,8 +4,9 @@ import {DataTypes, Model} from 'sequelize';
 
 class Todo extends Model{
     declare todoId:number;
-    declare userId:number
+    declare userId:number;
     declare text:string;
+    declare checked:boolean;
 }
 
 Todo.init({
@@ -20,6 +21,10 @@ Todo.init({
     },
     text:{
         type:DataTypes.TEXT,
+        allowNull:false
+    },
+    checked:{
+        type:DataTypes.BOOLEAN,
         allowNull:false
     }
 },{sequelize})
