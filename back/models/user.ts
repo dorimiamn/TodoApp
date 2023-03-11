@@ -1,9 +1,11 @@
 import sequelize from './db_config';
 import {Model,InferAttributes,InferCreationAttributes,CreationOptional, DataTypes} from 'sequelize';
+import Todo from './todo';
 
 class User extends Model<InferAttributes<User>,InferCreationAttributes<User>>{
-    declare userId:number;
+    declare userId:string;
     declare name:string;
+    declare todo:any;
 }
 
 User.init({
@@ -15,6 +17,9 @@ User.init({
     name:{
         type:DataTypes.STRING,
         allowNull:false
+    },
+    todo:{
+        type:DataTypes.JSON,
     }
 },{sequelize});
 

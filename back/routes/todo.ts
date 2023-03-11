@@ -7,7 +7,13 @@ const router=express.Router();
 
 const testId="aaaa000";
 
-//Showing All Todo
+router.get('/',async(_req:Request,res:Response)=>{
+    return res.status(200).send({
+        message:"This is Todo API",
+    })
+});
+
+//Reading All Todo
 router.get('/table',(req:Request,res:Response)=>{
     Todo.findAll({
         where:{
@@ -17,14 +23,14 @@ router.get('/table',(req:Request,res:Response)=>{
     }).then(todos=>{
         res.json(todos);
     });
-})
+});
 
 //Deleting Todo
 router.get('/delete',(req:Request,res:Response)=>{
     return res.status(200).send({
         message:"Deleting Todo"
     })
-})
+});
 
 //New Todo
 router.post('/new',(req:Request,res:Response)=>{
@@ -45,6 +51,6 @@ router.post('/update',(req:Request,res:Response)=>{
     return res.status(200).send({
         message:"Updating Todo"
     })
-})
+});
 
 export default router;
