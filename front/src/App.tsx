@@ -44,6 +44,9 @@ function App() {
 
       setTodos([newTodo,...todos]);
       setText('');
+
+      const json_todo=JSON.stringify(todos);
+      //json_todoのAPI Call
   }
 
   const handleOnCheck=(id:number,checked:boolean)=>{
