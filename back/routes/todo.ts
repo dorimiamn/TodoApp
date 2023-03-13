@@ -4,6 +4,7 @@ import uuid from "uuid";
 //Importing Todo Model
 import Todo from "../models/todo";
 import User from "../models/user";
+import { json } from "sequelize";
 
 const router=express.Router();
 
@@ -15,28 +16,43 @@ router.get('/',async(_req:Request,res:Response)=>{
     })
 });
 
-//Todoの更新
+//Todo 提供
+router.post('/json',(req:Request,res:Response)=>{
+    User.findByPk(req.body.userId)
+    .then(user=>{
+        console.log('user:',user);
 
-router.post('/update',(req:Request,res,Response)=>{
+        const json_data:JSON=user?.dataValues.todo;
+        console.log('json_data',json_data);
+
+        return res.json({json_data:json_data})
+    }).catch(err=>{
+        console.error('err:',err);
+        return res.status(500).end();
+    })
+})
+
+//Todoの更新
+router.post('/update',(req:Request,res:Response)=>{
     const filter={
         where:{
             userId:testId
         }
     };
 
+    console.log('req.body:',req.body);
+
     const param={
         todo:req.body
     };
 
-    console.log(req.body);
-
     User.update(param,filter)
     .then(()=>{
         console.log('todo updated uuid:',testId);
-        res.status(200);
+        return res.status(200).end();
     }).catch((err)=>{
         console.error('err:',err);
-        res.status(500);
+        return res.status(500).end();
     })
 })
 
@@ -48,7 +64,7 @@ router.get('/table',(req:Request,res:Response)=>{
         },
         order:[['createdAt','DESC']]
     }).then(todos=>{
-        res.json(todos);
+        return res.json(todos);
     });
 });
 
@@ -73,11 +89,5 @@ router.post('/new',(req:Request,res:Response)=>{
     })
 });
 
-//Updating Todo
-router.post('/update',(req:Request,res:Response)=>{
-    return res.status(200).send({
-        message:"Updating Todo"
-    })
-});
 
 export default router;

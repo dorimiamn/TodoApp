@@ -1,9 +1,12 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import axios from 'axios'
 import logo from './logo.svg'
 import './App.css'
 
 const endPoint:string='http://localhost:3001/'
+
+const testId='26539b42-125a-4d8e-8f3c-cb274a6314c5';
+
 
 type Todo={
     readonly id:number;
@@ -32,6 +35,17 @@ function App() {
       }
   });
 
+  useEffect(()=>{
+    const jsonEndPoint=endPoint+'todo/json';
+    axios.post(jsonEndPoint,{userId:testId})
+    .then((servedJson)=>{
+        console.log('servedJson:',servedJson.data.json_data);
+        setTodos(servedJson.data.json_data)
+    }).catch(err=>{
+        console.log('err:',err);
+    })
+  },[setTodos]);
+
   //Todoタイトル更新
   const handleOnChange = (e:React.ChangeEvent<HTMLInputElement>)=>{
     setText(e.target.value);
@@ -50,20 +64,22 @@ function App() {
       setTodos([newTodo,...todos]);
       setText('');
 
-      const json_todo=JSON.stringify([newTodo, ...todos]);
+      const deepCopy=[newTodo,...todos];
+
+      console.log('json_todo',deepCopy);
 
       const updateEndPoint:string=endPoint+'todo/update';
 
+      //json_todoのAPI Call
       axios.post(
-        updateEndPoint,json_todo
+        updateEndPoint,deepCopy
       ).then((res)=>{
-        console.log('ok');
+        console.log('OK');
       }).catch((e)=>{
         console.error('err:',e);
       })
 
-      console.log(json_todo);
-      //json_todoのAPI Call
+      console.log('handleOnSubmit Done');
   }
 
   //TodoのChecked更新
