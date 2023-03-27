@@ -168,7 +168,6 @@ function App() {
     return (
         <div className="App">
             <h1>Todo App</h1>
-            <input type="button" value="Test" onClick={() => postTest()} />
             <form onSubmit={(e) => {
                 e.preventDefault();
                 handleOnSubmit();
