@@ -1,5 +1,9 @@
 //Importing Module
 import express, { Application, Request, Response } from 'express';
+import passport from 'passport';
+import LocalStrategy from 'passport-local';
+import session from 'express-session';
+
 import sequelize from './models/db_config';
 import cors from 'cors';
 
@@ -19,6 +23,10 @@ const PORT = 3001;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+
+app.use(session({secret:"Develop"}));
+app.use(passport.initialize());
+app.use(passport.session());
 
 app.use(cors({
     origin: 'http://localhost:3000',
