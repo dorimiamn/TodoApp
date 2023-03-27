@@ -165,17 +165,6 @@ function App() {
         console.log('handleOnDelete Done');
     }
 
-    const postTest = () => {
-        axios.get(
-            endPoint
-        ).then((res) => {
-            console.log(res);
-            console.log(res.data.message)
-        }).catch(err => {
-            console.log("err:", err);
-        })
-    }
-
     return (
         <div className="App">
             <h1>Todo App</h1>
