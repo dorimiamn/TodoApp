@@ -1,5 +1,5 @@
-import {Sequelize} from 'sequelize';
+import { Sequelize } from 'sequelize';
 
-const sequelize=new Sequelize('postgres://postgres:postgres@localhost/todo1');
+const sequelize = new Sequelize('postgres://postgres:postgres@localhost/todo1');
 
 export default sequelize;

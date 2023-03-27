@@ -1,5 +1,5 @@
 //Importing Module
-import express ,{Application,Request,Response} from 'express';
+import express, { Application, Request, Response } from 'express';
 import sequelize from './models/db_config';
 import cors from 'cors';
 
@@ -14,39 +14,39 @@ import { Error } from 'sequelize';
 
 //Setting Relation 
 
-const app:Application=express();
-const PORT=3001;
+const app: Application = express();
+const PORT = 3001;
 
 app.use(express.json());
-app.use(express.urlencoded({extended:true}));
+app.use(express.urlencoded({ extended: true }));
 
 app.use(cors({
-    origin:'http://localhost:3000',
-    credentials:true,
+    origin: 'http://localhost:3000',
+    credentials: true,
 }))
 
-app.use('/todo',todoRouter);
-app.use('/user',userRouter);
+app.use('/todo', todoRouter);
+app.use('/user', userRouter);
 
-app.get('/',async(_req:Request,res:Response)=>{
+app.get('/', async (_req: Request, res: Response) => {
     return res.status(200).send({
-        message:"Hello World",
+        message: "Hello World",
     })
 })
 
 sequelize.authenticate()
-    .then(async ()=>{
+    .then(async () => {
         console.log('Connection has been established successfully.');
-        await sequelize.sync({force:true});
+        await sequelize.sync({ force: true });
     })
-    .catch((error)=>{
-        console.error('Unable to connect to the database',error);
+    .catch((error) => {
+        console.error('Unable to connect to the database', error);
     })
 
-try{
-    app.listen(PORT,()=>{
+try {
+    app.listen(PORT, () => {
         console.log(`dev server running at:http://localhost:${PORT}`);
     })
-}catch(e){
-    if(e instanceof Error)console.error(e.message )
+} catch (e) {
+    if (e instanceof Error) console.error(e.message)
 }
