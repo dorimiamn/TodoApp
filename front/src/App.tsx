@@ -40,7 +40,14 @@ function App() {
     axios.post(jsonEndPoint,{userId:testId})
     .then((servedJson)=>{
         console.log('servedJson:',servedJson.data.json_data);
-        setTodos(servedJson.data.json_data)
+        /**
+         * servedJson.data.jsonはユーザーアリだとnull,なしだとundefinedを返してくるので対応必須
+         * 賢いやり方があるかも？
+         */
+        if(servedJson.data.json_data!==null&&servedJson.data.json_data!==undefined){
+            setTodos(servedJson.data.json_data)
+            console.log('set todo');
+        }
     }).catch(err=>{
         console.log('err:',err);
     })
@@ -82,12 +89,39 @@ function App() {
       console.log('handleOnSubmit Done');
   }
 
+  //Todo更新
+    const handleOnUpdate=(id:number,e:React.ChangeEvent<HTMLInputElement>)=>{
+    const deepCopy=todos.map((todo)=>({...todo}));
+
+    const newTodos=deepCopy.map((todo)=>{
+        if(todo.id===id){
+            todo.text=e.target.value;
+        }
+        return todo;
+    })
+
+    setTodos(newTodos);
+
+    const updateEndPoint:string=endPoint+'todo/update';
+
+    //json_todoのAPI Call
+    axios.post(
+        updateEndPoint,newTodos
+      ).then((res)=>{
+        console.log('OK');
+      }).catch((e)=>{
+        console.error('err:',e);
+      })
+
+      console.log('handleOnUpdate Done');
+  }
+
   //TodoのChecked更新
   const handleOnCheck=(id:number,checked:boolean)=>{
     const deepCopy=todos.map((todo)=>({...todo}));
 
     const newTodos=deepCopy.map((todo)=>{
-        if(todo.id==id){
+        if(todo.id===id){
             todo.checked=!checked;
         }
         return todo;
@@ -141,7 +175,7 @@ function App() {
             {filteredTodos.map((todo)=>{
                 return <li key={todo.id}>
                     <input type="checkbox" checked={todo.checked} onChange={()=>handleOnCheck(todo.id,todo.checked)}/>
-                    <input type="text" value={todo.text} onChange={(e)=>handleOnChange(e)}/>
+                    <input type="text" value={todo.text} onChange={(e)=>handleOnUpdate(todo.id,e)}/>
                     <input type="button" value="削除" disabled={todo.checked} onClick={()=>handleOnDelete(todo.id)} />
                 </li>
             })}
