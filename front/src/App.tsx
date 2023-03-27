@@ -139,7 +139,7 @@ function App() {
             console.error('err:', e);
         })
 
-        console.log('handleOnUpdate Done');
+        console.log('handleOnCheckUpdate Done');
     }
 
     //Todo削除
@@ -152,7 +152,17 @@ function App() {
         })
         setTodos(newTodos);
 
-        //JSON化してpost
+        const updateEndPoint: string = endPoint + 'todo/update';
+        //json_todoのAPI Call
+        axios.post(
+            updateEndPoint, newTodos
+        ).then((res) => {
+            console.log('OK');
+        }).catch((e) => {
+            console.error('err:', e);
+        })
+
+        console.log('handleOnDelete Done');
     }
 
     const postTest = () => {
