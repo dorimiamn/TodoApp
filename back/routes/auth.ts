@@ -10,8 +10,10 @@ const router=express.Router();
 router.post('/github',passport.authenticate('github',{scope:['user:email']}));
 
 router.post('/github/callback',
-    passport.authenticate('github',{failureRedirect:'/login'}),
+    passport.authenticate('github'),
     (req,res,next)=>{
-        res.redirect('/');
+        res.json({user:req.user});
     }
 );
+
+export default router;

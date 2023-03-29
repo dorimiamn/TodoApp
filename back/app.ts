@@ -11,6 +11,7 @@ import cors from 'cors';
 //Importing Router
 import todoRouter from './routes/todo';
 import userRouter from './routes/user';
+import authRouter from './routes/auth';
 //Importing Models
 
 import User from './models/user';
@@ -48,13 +49,17 @@ passport.use(new GitHubStrategy({
     })
 }))
 
+
+//CORS Policy
 app.use(cors({
     origin: 'http://localhost:3000',
     credentials: true,
 }))
 
+//Router Setting
 app.use('/todo', todoRouter);
 app.use('/user', userRouter);
+app.use('/auth',authRouter);
 
 app.get('/', async (_req: Request, res: Response) => {
     return res.status(200).send({
