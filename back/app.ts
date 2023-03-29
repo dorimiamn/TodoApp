@@ -23,8 +23,8 @@ import { strict } from 'assert';
 const app: Application = express();
 const PORT = 3001;
 
-const GITHUB_CLIENT_ID="";
-const GITHUB_CLIENT_SECRET="";
+const GITHUB_CLIENT_ID:string=process.env.MY_TODO_GITHUB_ID as string;
+const GITHUB_CLIENT_SECRET:string=process.env.MY_TODO_GITHUB_SECRET as string;
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
