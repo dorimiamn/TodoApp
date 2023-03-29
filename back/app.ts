@@ -2,6 +2,7 @@
 import express, { Application, Request, Response } from 'express';
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
+import {Strategy as GitHubStrategy} from 'passport-github2';
 import session from 'express-session';
 
 import sequelize from './models/db_config';
@@ -15,11 +16,15 @@ import userRouter from './routes/user';
 import User from './models/user';
 import Todo from './models/user';
 import { Error } from 'sequelize';
+import { strict } from 'assert';
 
 //Setting Relation 
 
 const app: Application = express();
 const PORT = 3001;
+
+const GITHUB_CLIENT_ID="";
+const GITHUB_CLIENT_SECRET="";
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -27,6 +32,21 @@ app.use(express.urlencoded({ extended: true }));
 app.use(session({secret:"Develop"}));
 app.use(passport.initialize());
 app.use(passport.session());
+
+//GitHub OAuth
+passport.use(new GitHubStrategy({
+    clientID:GITHUB_CLIENT_ID,
+    clientSecret:GITHUB_CLIENT_SECRET,
+    callbackURL:"localhost:3000/auth/github/callback"
+},function(accessToken:string,refreshToken:string,profile:any,done:any){
+    //todo
+    User.findOrCreate({where:{githubId:profile.id}}).then((user)=>{
+        return done(user);
+    }).catch(err=>{
+        console.error(err);
+        return done(err);
+    })
+}))
 
 app.use(cors({
     origin: 'http://localhost:3000',

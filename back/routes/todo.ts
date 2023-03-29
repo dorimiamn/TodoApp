@@ -22,7 +22,7 @@ router.post('/json', (req: Request, res: Response) => {
         .then(user => {
             console.log('user:', user);
 
-            const json_data: JSON = user?.dataValues.todo;
+            const json_data: JSON|null|undefined= user?.dataValues.todo;
             console.log('json_data', json_data);
 
             return res.json({ json_data: json_data })

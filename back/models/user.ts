@@ -5,7 +5,8 @@ import Todo from './todo';
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>>{
     declare userId: string;
     declare name: string;
-    declare todo: any;
+    declare githubId:string|null;
+    declare todo: JSON|null;
 }
 
 User.init({
@@ -17,6 +18,9 @@ User.init({
     name: {
         type: DataTypes.STRING,
         allowNull: false
+    },
+    githubId:{
+        type:DataTypes.STRING,
     },
     todo: {
         type: DataTypes.JSON,
