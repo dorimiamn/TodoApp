@@ -37,7 +37,7 @@ app.use(passport.session());
 passport.use(new GitHubStrategy({
     clientID:GITHUB_CLIENT_ID,
     clientSecret:GITHUB_CLIENT_SECRET,
-    callbackURL:"localhost:3000/auth/github/callback"
+    callbackURL:"localhost:3001/auth/github/callback"
 },function(accessToken:string,refreshToken:string,profile:any,done:any){
     //todo
     User.findOrCreate({where:{githubId:profile.id}}).then((user)=>{
