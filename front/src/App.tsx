@@ -1,5 +1,8 @@
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import React, { useEffect, useState } from 'react';
+import axios from 'axios';
+import {Routes , Route, BrowserRouter} from "react-router-dom";
+
+import Auth from './ts/auth';
 import logo from './logo.svg'
 import './App.css'
 
@@ -167,6 +170,11 @@ function App() {
 
     return (
         <div className="App">
+            <BrowserRouter>
+                <Routes>
+                    <Route index element={<Auth/>}/>
+                </Routes>
+            </BrowserRouter>
             <h1>Todo App</h1>
             <form onSubmit={(e) => {
                 e.preventDefault();

@@ -11,7 +11,7 @@ import cors from 'cors';
 //Importing Router
 import todoRouter from './routes/todo';
 import userRouter from './routes/user';
-import authRouter from './routes/auth';
+import {authRouter,GitHubAuth} from './routes/auth';
 //Importing Models
 
 import User from './models/user';
@@ -30,15 +30,40 @@ const GITHUB_CLIENT_SECRET:string=process.env.MY_TODO_GITHUB_SECRET as string;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use(session({secret:"Develop"}));
+app.use(session({
+    secret:"Develop",
+    resave:true,
+    saveUninitialized:true,
+    cookie:{
+        secure:'auto'
+    }
+}));
 app.use(passport.initialize());
 app.use(passport.session());
+
+GitHubAuth(app);
+
+/*
+passport.serializeUser((user,done)=>{
+    done(null,user);
+});
+
+passport.deserializeUser(function(id:string,done){
+    User.findByPk(id).then(user=>{
+        done(user);
+    }).catch(err=>{
+        done(err);
+    })
+});
+
+//え？二つあるけどなんで？
+//切り分けの過程で複数ある状態になっていた。
 
 //GitHub OAuth
 passport.use(new GitHubStrategy({
     clientID:GITHUB_CLIENT_ID,
     clientSecret:GITHUB_CLIENT_SECRET,
-    callbackURL:"localhost:3001/auth/github/callback"
+    callbackURL:"http://localhost:3001/auth/github/callback",
 },function(accessToken:string,refreshToken:string,profile:any,done:any){
     //todo
     User.findOrCreate({where:{githubId:profile.id}}).then((user)=>{
@@ -49,10 +74,11 @@ passport.use(new GitHubStrategy({
     })
 }))
 
+*/
 
 //CORS Policy
 app.use(cors({
-    origin: 'http://localhost:3000',
+    origin: ['http://localhost:3000','https://github.com/'],
     credentials: true,
 }))
 

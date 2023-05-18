@@ -1,19 +1,77 @@
 // About Authentication
 
+//OAuthとRouterも分けたほうがいいよね？
+
 import express, {Request,Response} from "express";
 import passport from "passport";
+import {Strategy as GitHubStrategy} from 'passport-github2';
+
 
 import User from "../models/user";
+import { randomUUID } from "crypto";
 
 const router=express.Router();
 
-router.post('/github',passport.authenticate('github',{scope:['user:email']}));
+const GITHUB_CLIENT_ID:string=process.env.MY_TODO_GITHUB_ID as string;
+const GITHUB_CLIENT_SECRET:string=process.env.MY_TODO_GITHUB_SECRET as string;
 
-router.post('/github/callback',
-    passport.authenticate('github'),
+function GitHubAuth(app: Function) {
+
+    passport.serializeUser((user, done) => {
+        done(null, user);
+    });
+
+    passport.deserializeUser(function (id: string, done) {
+        User.findByPk(id).then(user => {
+            done(user);
+        }).catch(err => {
+            done(err);
+        })
+    });
+
+    //GitHub OAuth
+    passport.use(new GitHubStrategy({
+        clientID: GITHUB_CLIENT_ID,
+        clientSecret: GITHUB_CLIENT_SECRET,
+        callbackURL: "http://localhost:3001/auth/github/callback",
+    }, function (accessToken: string, refreshToken: string, profile: any, done: any) {
+        //todo
+        console.log('OAuth 処理実行', profile);
+        User.findOrCreate({
+            where: { githubId: profile.id },
+            defaults: {
+                userId: randomUUID(),
+                name: 'test',
+            }
+        }).then((user) => {
+            console.log('userを処理')
+            return done(user);
+        }).catch(err => {
+            console.error('error 発生');
+            return done(err);
+        })
+    }))
+} 
+
+router.get('/',(req,res,next)=>{
+    res.send({message:'This is Auth API'})
+})
+
+router.get('/github',
+    passport.authenticate('github',{scope:['user:email']}),
     (req,res,next)=>{
-        res.json({user:req.user});
+        console.log('Test')
+    }
+    
+);
+
+//callback後の処理が抜けている
+router.get('/github/callback',
+    passport.authenticate('github',{failureRedirect:'/login'}),
+    (req,res,next)=>{
+        console.log('GitHub Authorized');
+        //res.json({user:req.user});
     }
 );
 
-export default router;
+export {router as authRouter , GitHubAuth}

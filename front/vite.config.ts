@@ -9,6 +9,10 @@ export default defineConfig({
                  target:'http://localhost:3001/api',
                  changeOrigin:true,
                  rewrite:(path)=>path.replace(/^\/api/,'')
+             },
+             '/auth':{
+                target:'https://github.com/login',
+                changeOrigin:true
              }
          }
     },
