@@ -2,7 +2,7 @@
 
 //OAuthとRouterも分けたほうがいいよね？
 
-import express, {Request,Response} from "express";
+import express, {Application,Request,Response} from "express";
 import passport from "passport";
 import {Strategy as GitHubStrategy} from 'passport-github2';
 
@@ -15,14 +15,16 @@ const router=express.Router();
 const GITHUB_CLIENT_ID:string=process.env.MY_TODO_GITHUB_ID as string;
 const GITHUB_CLIENT_SECRET:string=process.env.MY_TODO_GITHUB_SECRET as string;
 
-function GitHubAuth(app: Function) {
+function GitHubAuth(app: Application) {
 
     passport.serializeUser((user, done) => {
+        console.log('Serialize');
         done(null, user);
     });
 
-    passport.deserializeUser(function (id: string, done) {
-        User.findByPk(id).then(user => {
+    passport.deserializeUser(async function (id: string, done) {
+        console.log('Deserialize',id);
+        await User.findOne({where:{githubId:id}}).then(user => {
             done(user);
         }).catch(err => {
             done(err);
@@ -43,14 +45,13 @@ function GitHubAuth(app: Function) {
                 userId: randomUUID(),
                 name: 'test',
             }
-        }).then((user) => {
-            console.log('userを処理')
-            return done(user);
-        }).catch(err => {
-            console.error('error 発生');
-            return done(err);
+        }).then(()=>{
+            return done(null,profile.id);
         })
+        console.log('処理終了')
     }))
+
+    app.use(passport.session());
 } 
 
 router.get('/',(req,res,next)=>{
@@ -67,10 +68,12 @@ router.get('/github',
 
 //callback後の処理が抜けている
 router.get('/github/callback',
-    passport.authenticate('github',{failureRedirect:'/login'}),
+    passport.authenticate('github',{
+        failureRedirect:'/login',
+        successRedirect:'/'
+    }),
     (req,res,next)=>{
         console.log('GitHub Authorized');
-        //res.json({user:req.user});
     }
 );
 
