@@ -70,10 +70,10 @@ router.get('/github',
 router.get('/github/callback',
     passport.authenticate('github',{
         failureRedirect:'/login',
-        successRedirect:'/'
     }),
     (req,res,next)=>{
         console.log('GitHub Authorized');
+        res.redirect('localhost:3000/');
     }
 );
 
