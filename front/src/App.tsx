@@ -8,7 +8,7 @@ import './App.css'
 
 const endPoint: string = 'http://localhost:3001/'
 
-const testId = '26539b42-125a-4d8e-8f3c-cb274a6314c5';
+// const testId = '26539b42-125a-4d8e-8f3c-cb274a6314c5';
 
 
 type Todo = {
@@ -19,9 +19,14 @@ type Todo = {
 
 type Filter = "all" | "checked" | "unchecked";
 
+function auth(){
+    
+}
+
 function App() {
-    const [count, setCount] = useState(0)
+    const [count, setCount] = useState(0);
     const [text, setText] = useState('');
+    const [user,setUser]=useState();
     const [todos, setTodos] = useState<Todo[]>([]);
     const [filter, setFilter] = useState<Filter>("all");
 
@@ -38,23 +43,15 @@ function App() {
         }
     });
 
+    //レンダリング初回に実行される処理
     useEffect(() => {
-        const jsonEndPoint = endPoint + 'todo/json';
-        axios.post(jsonEndPoint, { userId: testId })
-            .then((servedJson) => {
-                console.log('servedJson:', servedJson.data.json_data);
-                /**
-                 * servedJson.data.jsonはユーザーアリだとnull,なしだとundefinedを返してくるので対応必須
-                 * 賢いやり方があるかも？
-                 */
-                if (servedJson.data.json_data !== null && servedJson.data.json_data !== undefined) {
-                    setTodos(servedJson.data.json_data)
-                    console.log('set todo');
-                }
-            }).catch(err => {
-                console.log('err:', err);
-            })
-    }, [setTodos]);
+        //ユーザー認証
+        fetch('http://localhost:3001/auth/',{method:'GET'})
+        .then(res=>res.json())
+        .then(data=>{
+            console.log(data);
+        })
+    }, []);
 
     //Todoタイトル更新
     const handleOnChange = (e: React.ChangeEvent<HTMLInputElement>) => {

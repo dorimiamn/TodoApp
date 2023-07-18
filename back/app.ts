@@ -30,14 +30,18 @@ const GITHUB_CLIENT_SECRET:string=process.env.MY_TODO_GITHUB_SECRET as string;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+/*
 app.use(session({
     secret:"Develop",
     resave:true,
     saveUninitialized:true,
     cookie:{
-        secure:'auto'
+        secure:'auto',
+        httpOnly:true,
+        maxAge:24*60*60*1000
     }
 }));
+*/
 app.use(passport.initialize());
 // app.use(passport.session());
 
