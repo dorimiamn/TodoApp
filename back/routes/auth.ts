@@ -3,9 +3,13 @@
 //OAuthとRouterも分けたほうがいいよね？
 
 import express, {Application,Request,Response} from "express";
-import session from "express-session";
+// import session from "express-session";
 import passport from "passport";
 import {Strategy as GitHubStrategy} from 'passport-github2';
+import cors from "cors";
+import {expressjwt} from "express-jwt";
+import jsonWebToken from "jsonwebtoken";
+import cookieParser from "cookie-parser";
 
 
 import User from "../models/user";
@@ -16,22 +20,23 @@ const router=express.Router();
 const GITHUB_CLIENT_ID:string=process.env.MY_TODO_GITHUB_ID as string;
 const GITHUB_CLIENT_SECRET:string=process.env.MY_TODO_GITHUB_SECRET as string;
 
+const jwtSecret="develop";
+
+const corsOption={
+    origin:'http://localhost:3000',
+    credentials: true,
+    optionSuccessStatus:200,
+}
+
+// declare module 'express-session'{
+    // interface SessionData{
+        // authenticated:Boolean;
+        // FirstAccessTime:String;
+        // counter:number;
+    // }
+// }
+
 function GitHubAuth(app: Application) {
-
-    passport.serializeUser((user:any, done) => {
-        console.log('Serialize');
-        console.log(user);
-        done(null, user.id);
-    });
-
-    passport.deserializeUser(async function (id: string, done) {
-        console.log('Deserialize',id);
-        await User.findOne({where:{githubId:id}}).then(user => {
-            done(user);
-        }).catch(err => {
-            done(err);
-        })
-    });
 
     //GitHub OAuth
     passport.use(new GitHubStrategy({
@@ -53,34 +58,56 @@ function GitHubAuth(app: Application) {
         console.log('処理終了')
     }))
 
-    app.use(
-        session({
-            secret:"Develop",
-            resave:true,
-            saveUninitialized:true,
-            cookie:{
-                secure:'auto',
-                httpOnly:true,
-                maxAge:24*60*60*1000
-            }
-        })
-    )
+    // app.use(
+        // session({
+            // secret:"Develop",
+            // resave:false,
+            // saveUninitialized:true,
+            // cookie:{
+                // secure:'auto',
+                // sameSite:'none',
+                // httpOnly:true,
+                // maxAge:60*60*1000,
+            // }
+        // })
+    // )
 
-    app.use(passport.session());
+    app.use(cors(corsOption));
+    app.use(cookieParser());
+    // app.use(expressjwt({
+        // secret:jwtSecret,
+        // algorithms:['HS256'],
+        // getToken: (req:Request) => req.cookies.token,
+    // }))
+
 } 
 
 router.get('/',(req,res,next)=>{
-    if(req.isAuthenticated())console.log('Authenticated');
-    else console.log('Not Authenticated');
-    console.log(req.user);
-    res.send({message:'This is Auth API'})
+    // if(req.session.authenticated)console.log('Authenticated');
+    // else console.log('Not Authenticated');
+    if(!req.cookies.FirstAccessTime){
+        const now=new Date();
+        res.cookie('FirstAccessTime',now.toISOString);
+    }
+    const counter=req.cookies.counter ? req.cookies.counter + 1: 1;
+    res.cookie('counter',counter);
+    console.log('counter:',counter);
+    // console.log(req.rawHeaders);
+    // res.cookie('name2', 'value2', {
+    //     httpOnly: true
+    // })
+    const token=jsonWebToken.sign({user:'test'},jwtSecret);
+    res.cookie('token',token,{httpOnly:true});
+    res.json({token});
+    // res.send({message:'This is Auth API'})
 })
 
 router.get('/session',passport.authenticate('github',{
-    failureRedirect:'/login',
+    failureRedirect:'http://localhost:3000/error',
     }),
     (req,res,next)=>{
-        console.log(req.user);
+        //console.log(req.user);
+        console.log('this is session','req.session',req.session);
         //ここをfetchで叩かせることでreq.user を渡せそう。
         //
         res.json(req.user);
@@ -99,12 +126,17 @@ router.get('/github',
 //callback後の処理が抜けている
 router.get('/github/callback',
     passport.authenticate('github',{
+        session:false,
         failureRedirect:'/login',
     }),
     (req,res,next)=>{
         console.log('GitHub Authorized');
-        console.log('req.user:',req.user);
-        res.redirect('localhost:3000/');
+        console.log(req.user);
+        // const userId:number=req.user&&req.user.id;
+        const token=jsonWebToken.sign({user:'next'},jwtSecret);
+        console.log('token:',token);
+        res.cookie('token',token,{httpOnly:true});
+        res.redirect('http://localhost:3000');
     }
 );
 

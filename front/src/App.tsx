@@ -6,6 +6,8 @@ import Auth from './ts/auth';
 import logo from './logo.svg'
 import './App.css'
 
+axios.defaults.withCredentials=true;
+
 const endPoint: string = 'http://localhost:3001/'
 
 // const testId = '26539b42-125a-4d8e-8f3c-cb274a6314c5';
@@ -27,6 +29,7 @@ function App() {
     const [count, setCount] = useState(0);
     const [text, setText] = useState('');
     const [user,setUser]=useState();
+    const [jwt,setJwt]=useState<String | null>();
     const [todos, setTodos] = useState<Todo[]>([]);
     const [filter, setFilter] = useState<Filter>("all");
 
@@ -46,11 +49,11 @@ function App() {
     //レンダリング初回に実行される処理
     useEffect(() => {
         //ユーザー認証
-        fetch('http://localhost:3001/auth/',{method:'GET'})
-        .then(res=>res.json())
-        .then(data=>{
-            console.log(data);
-        })
+        axios.get('http://localhost:3001/auth')
+            .then((res)=>{
+                // setJwt(res.data.token);
+                console.log(res.data.token);
+            })
     }, []);
 
     //Todoタイトル更新

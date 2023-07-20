@@ -3,7 +3,6 @@ import express, { Application, Request, Response } from 'express';
 import passport from 'passport';
 import LocalStrategy from 'passport-local';
 import {Strategy as GitHubStrategy} from 'passport-github2';
-import session from 'express-session';
 
 import sequelize from './models/db_config';
 import cors from 'cors';
