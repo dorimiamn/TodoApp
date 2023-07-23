@@ -3,6 +3,8 @@ import axios from 'axios';
 import {Routes , Route, BrowserRouter} from "react-router-dom";
 
 import Auth from './ts/auth';
+import GitHub_CallBack from './ts/github'
+import Not_Found from './ts/not_found'
 import logo from './logo.svg'
 import './App.css'
 
@@ -49,11 +51,11 @@ function App() {
     //レンダリング初回に実行される処理
     useEffect(() => {
         //ユーザー認証
-        axios.get('http://localhost:3001/auth')
-            .then((res)=>{
+        // axios.get('http://localhost:3001/auth')
+            // .then((res)=>{
                 // setJwt(res.data.token);
-                console.log(res.data.token);
-            })
+                // console.log(res.data.token);
+            // })
     }, []);
 
     //Todoタイトル更新
@@ -172,7 +174,11 @@ function App() {
         <div className="App">
             <BrowserRouter>
                 <Routes>
-                    <Route index element={<Auth/>}/>
+                    <Route path='/' element={<Auth/>}></Route>
+                    <Route path='/auth/*' element={<GitHub_CallBack/>}></Route>
+                    <Route path='*' element={<Not_Found/>}></Route>
+
+                    {/* <Route path='/' element={<Auth/>}></Route> */}
                 </Routes>
             </BrowserRouter>
             <h1>Todo App</h1>

@@ -10,10 +10,17 @@ import cors from "cors";
 import {expressjwt} from "express-jwt";
 import jsonWebToken from "jsonwebtoken";
 import cookieParser from "cookie-parser";
+import axios ,{AxiosResponse} from "axios";
 
 
 import User from "../models/user";
 import { randomUUID } from "crypto";
+
+type Token_Res={
+    access_token:string;
+    scope:string;
+    token_type:string;
+}
 
 const router=express.Router();
 
@@ -115,13 +122,35 @@ router.get('/session',passport.authenticate('github',{
     }
 );
 
-router.get('/github',
-    passport.authenticate('github',{scope:['user:email']}),
-    (req,res,next)=>{
-        console.log('Test')
-    }
-    
-);
+router.get('/github',(req,res,next)=>{
+    console.log('code:',req.query['code']);
+    axios.post('https://github.com/login/oauth/access_token',{
+        client_id:GITHUB_CLIENT_ID,
+        client_secret:GITHUB_CLIENT_SECRET,
+        code:req.query['code'],
+    },{
+        headers:{
+            'Accept':'application/json'
+        },
+    }).then(async(token_res:AxiosResponse<Token_Res>)=>{
+        const {data,status}=token_res;
+        console.log('data:',data);
+        console.log('access_token:',data['access_token']);
+        await axios.get('https://api.github.com/user',{
+            headers:{
+                Authorization: `Bearer ${data['access_token']}`,
+            }
+        }).then(user=>{
+            console.log('GitHub access Succeeded!')
+            console.log(user);
+            res.send({message:"All process Succeeded!"});
+        }).catch(err=>{
+            console.log(err);
+        })
+    }).catch(err=>{
+        console.log(err);
+    })
+});
 
 //callback後の処理が抜けている
 router.get('/github/callback',

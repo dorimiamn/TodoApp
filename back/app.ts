@@ -16,7 +16,6 @@ import {authRouter,GitHubAuth} from './routes/auth';
 import User from './models/user';
 import Todo from './models/user';
 import { Error } from 'sequelize';
-import { strict } from 'assert';
 
 //Setting Relation 
 
