@@ -22,6 +22,11 @@ type Token_Res={
     token_type:string;
 }
 
+type User_Info={
+    login:string;
+    id:string;
+}
+
 const router=express.Router();
 
 const GITHUB_CLIENT_ID:string=process.env.MY_TODO_GITHUB_ID as string;
@@ -81,11 +86,11 @@ function GitHubAuth(app: Application) {
 
     app.use(cors(corsOption));
     app.use(cookieParser());
-    // app.use(expressjwt({
-        // secret:jwtSecret,
-        // algorithms:['HS256'],
-        // getToken: (req:Request) => req.cookies.token,
-    // }))
+    app.use(expressjwt({
+        secret:jwtSecret,
+        algorithms:['HS256'],
+        getToken: (req:Request) => req.cookies.token,
+    }))
 
 } 
 
@@ -140,10 +145,14 @@ router.get('/github',(req,res,next)=>{
             headers:{
                 Authorization: `Bearer ${data['access_token']}`,
             }
-        }).then(user=>{
+        }).then((user:AxiosResponse<User_Info>)=>{
             console.log('GitHub access Succeeded!')
-            console.log(user);
-            res.send({message:"All process Succeeded!"});
+            console.log(user.data);
+            const token=jsonWebToken.sign({user:user.data.login},jwtSecret);
+            res.cookie('token',token,{httpOnly:true});
+            res.json({
+                username:user.data.login,
+            });
         }).catch(err=>{
             console.log(err);
         })

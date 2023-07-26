@@ -10,9 +10,7 @@ const endPoint: string = 'http://localhost:3001/'
 const callBackURI:string='http://localhost:3000/auth/github'
 const GITHUB_CLIENT_ID:string=import.meta.env.VITE_TODO_GITHUB_ID;
 
-export default function auth(){
-    const [jwt,setJwt]=useState<String | null>();
-    
+export default function auth(){    
     const handleOnClick=()=>{
         console.log('処理実行');
         axios.get('https://github.com/login/oauth/authorize',
@@ -23,8 +21,7 @@ export default function auth(){
                 }
             })
             .then((res)=>{
-                // setJwt(res.data.token);
-                console.log(res.data.token);
+                console.log(res);
             })
     }
 
