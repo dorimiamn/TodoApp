@@ -50,6 +50,8 @@ const corsOption={
 
 function GitHubAuth(app: Application) {
 
+    console.log('exec GitHubAuth');
+
     //GitHub OAuth
     passport.use(new GitHubStrategy({
         clientID: GITHUB_CLIENT_ID,
@@ -86,12 +88,14 @@ function GitHubAuth(app: Application) {
 
     app.use(cors(corsOption));
     app.use(cookieParser());
+    //怪しい
+    /*
     app.use(expressjwt({
         secret:jwtSecret,
         algorithms:['HS256'],
         getToken: (req:Request) => req.cookies.token,
-    }))
-
+    }).unless({path:["/github"]}));
+    */
 } 
 
 router.get('/',(req,res,next)=>{
@@ -148,7 +152,7 @@ router.get('/github',(req,res,next)=>{
         }).then((user:AxiosResponse<User_Info>)=>{
             console.log('GitHub access Succeeded!')
             console.log(user.data);
-            const token=jsonWebToken.sign({user:user.data.login},jwtSecret);
+            const token="dummy";//jsonWebToken.sign({user:user.data.login},jwtSecret);
             res.cookie('token',token,{httpOnly:true});
             res.json({
                 username:user.data.login,
@@ -171,11 +175,21 @@ router.get('/github/callback',
         console.log('GitHub Authorized');
         console.log(req.user);
         // const userId:number=req.user&&req.user.id;
-        const token=jsonWebToken.sign({user:'next'},jwtSecret);
+        const token="dummy";//jsonWebToken.sign({user:'next'},jwtSecret);
         console.log('token:',token);
         res.cookie('token',token,{httpOnly:true});
         res.redirect('http://localhost:3000');
     }
 );
+
+router.get('/logout',(req:Request,res:Response,next)=>{
+    req.logout((err)=>{
+        if(err)return next(err);
+        console.log('logout');
+        res.redirect('/');
+    })
+})
+
+//ログアウト処理を実装しないとダメそう
 
 export {router as authRouter , GitHubAuth}
