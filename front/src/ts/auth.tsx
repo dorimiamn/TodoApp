@@ -29,8 +29,6 @@ export default function auth(){
 
     return(
         <div className='Auth'>
-            <h1>ログイン</h1>
-            <button onClick={handleOnClick}>ログイン</button>
             <Link to={'https://github.com/login/oauth/authorize?client_id='+GITHUB_CLIENT_ID+'&redirect_uri='+callBackURI}>Link</Link>
         </div>
     )

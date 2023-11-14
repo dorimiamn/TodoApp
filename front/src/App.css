@@ -2,6 +2,12 @@
   text-align: center;
 }
 
+.Todo{
+    text-align: center;
+    margin: 50px auto;
+    width: 500px;
+}
+
 .App-logo {
   height: 40vmin;
   pointer-events: none;
