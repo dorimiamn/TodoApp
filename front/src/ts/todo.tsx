@@ -42,8 +42,10 @@ function TodoApp() {
         // バックエンドから保存した Todo を取得する
         const getEndPoint: string = endPoint + 'todo/table';
         axios.get(getEndPoint).then((res) => {
-            console.log('res.data.todo', res.data.todo);
-            setTodos(res.data.todo);
+            const todo:Todo[] = res.data.todo;
+            if (todo) {
+                setTodos(todo);
+            }
         }).catch((e) => {
             console.error('err:', e);
         })
