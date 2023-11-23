@@ -86,7 +86,7 @@ function TodoApp() {
     }
 
     //Todo更新
-    const handleOnUpdate = (id: number, e: React.ChangeEvent<FormControlElement>) => {
+    const handleOnUpdate = (id: number, e: React.ChangeEvent<HTMLInputElement>) => {
         const deepCopy = todos.map((todo) => ({ ...todo }));
 
         const newTodos = deepCopy.map((todo) => {
@@ -169,7 +169,7 @@ function TodoApp() {
                 handleOnSubmit();
             }}>
                 <Form.Group className="mb-3" controlId="todoName">
-                    <Form.Control type="text" placeholder='Todo を入力しよう' value={text} onChange={(e) => handleOnChange(e)} ></Form.Control>
+                    <Form.Control type="text" placeholder='Todo を入力しよう' value={text} onChange={(e) => handleOnChange(e as React.ChangeEvent<HTMLInputElement>)} ></Form.Control>
                 </Form.Group>
             </Form>
             <Form.Select aria-label='Task List' defaultValue="all" onChange={(e) => setFilter(e.target.value as Filter)}>
@@ -181,7 +181,7 @@ function TodoApp() {
                 {filteredTodos.map((todo) => {
                     return <li key={todo.id}>
                         <Form.Check type="checkbox" checked={todo.checked} onChange={() => handleOnCheck(todo.id, todo.checked)} />
-                        <Form.Control type="text" value={todo.text} onChange={(e) => handleOnUpdate(todo.id, e)} />
+                        <Form.Control type="text" value={todo.text} onChange={(e) => handleOnUpdate(todo.id, e as React.ChangeEvent<HTMLInputElement>)} />
                         <Button type="button" value="削除" disabled={todo.checked} onClick={() => handleOnDelete(todo.id)}>削除</Button>
                     </li>
                 })}
