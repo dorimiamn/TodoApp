@@ -39,12 +39,14 @@ function TodoApp() {
 
     //レンダリング初回に実行される処理
     useEffect(() => {
-        //ユーザー認証
-        // axios.get('http://localhost:3001/auth')
-            // .then((res)=>{
-                // setJwt(res.data.token);
-                // console.log(res.data.token);
-            // })
+        // バックエンドから保存した Todo を取得する
+        const getEndPoint: string = endPoint + 'todo/table';
+        axios.get(getEndPoint).then((res) => {
+            console.log('res.data.todo', res.data.todo);
+            setTodos(res.data.todo);
+        }).catch((e) => {
+            console.error('err:', e);
+        })
     }, []);
 
     //Todoタイトル更新
@@ -167,7 +169,7 @@ function TodoApp() {
                 handleOnSubmit();
             }}>
                 <Form.Group className="mb-3" controlId="todoName">
-                    <Form.Control type="text" placeholder='Todo を入力しよう' value={text} onChange={(e) => handleOnChange(e)} ></Form.Control>
+                    <Form.Control type="text" placeholder='Todo を入力しよう' value={text} onChange={(e) => handleOnChange(e as React.ChangeEvent<HTMLInputElement>)} ></Form.Control>
                 </Form.Group>
             </Form>
             <Form.Select aria-label='Task List' defaultValue="all" onChange={(e) => setFilter(e.target.value as Filter)}>
@@ -179,7 +181,7 @@ function TodoApp() {
                 {filteredTodos.map((todo) => {
                     return <li key={todo.id}>
                         <Form.Check type="checkbox" checked={todo.checked} onChange={() => handleOnCheck(todo.id, todo.checked)} />
-                        <Form.Control type="text" value={todo.text} onChange={(e) => handleOnUpdate(todo.id, e)} />
+                        <Form.Control type="text" value={todo.text} onChange={(e) => handleOnUpdate(todo.id, e as React.ChangeEvent<HTMLInputElement>)} />
                         <Button type="button" value="削除" disabled={todo.checked} onClick={() => handleOnDelete(todo.id)}>削除</Button>
                     </li>
                 })}
