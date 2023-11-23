@@ -18,6 +18,7 @@ router.get('/', async (_req: Request, res: Response) => {
 
 //Todo 提供
 router.post('/json', (req: Request, res: Response) => {
+    console.log('json API');
     User.findByPk(req.body.userId)
         .then(user => {
             console.log('user:', user);
@@ -46,11 +47,23 @@ router.post('/update', (req: Request, res: Response) => {
         todo: req.body
     };
 
-    User.update(param, filter)
-        .then(() => {
-            console.log('todo updated uuid:', testId);
-            return res.status(200).end();
-        }).catch((err) => {
+    User.findByPk(testId)
+        .then(user =>{
+            if(user === null){
+                console.log('user is null');
+                User.create({
+                    userId: testId,
+                    name: 'test',
+                    githubId: null,
+                    todo: param.todo
+                })
+                return res.status(200).end();
+            }else{
+                console.log('user :', user);
+                user.todo = param.todo;
+                user.save();
+            }
+        }).catch(err=>{
             console.error('err:', err);
             return res.status(500).end();
         })
@@ -58,14 +71,23 @@ router.post('/update', (req: Request, res: Response) => {
 
 //Reading All Todo
 router.get('/table', (req: Request, res: Response) => {
-    Todo.findAll({
-        where: {
-            userId: req.body.userId
-        },
-        order: [['createdAt', 'DESC']]
-    }).then(todos => {
-        return res.json(todos);
-    });
+    console.log('table API');
+    // const userId = req.body.userId;
+    const userId = testId;
+    User.findByPk(userId)
+        .then(user => {
+            console.log('user:', user);
+            if (user === null) {
+                console.log('user is null');
+                return res.status(200).end();
+            }
+            const todo = user?.dataValues.todo;
+            console.log('todo:', todo);
+            return res.json({ todo: todo });
+        }).catch(err => {
+            console.error('err:', err);
+            return res.status(500).end();
+        })
 });
 
 //Deleting Todo

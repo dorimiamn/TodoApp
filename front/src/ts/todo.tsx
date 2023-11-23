@@ -39,12 +39,14 @@ function TodoApp() {
 
     //レンダリング初回に実行される処理
     useEffect(() => {
-        //ユーザー認証
-        // axios.get('http://localhost:3001/auth')
-            // .then((res)=>{
-                // setJwt(res.data.token);
-                // console.log(res.data.token);
-            // })
+        // バックエンドから保存した Todo を取得する
+        const getEndPoint: string = endPoint + 'todo/table';
+        axios.get(getEndPoint).then((res) => {
+            console.log('res.data.todo', res.data.todo);
+            setTodos(res.data.todo);
+        }).catch((e) => {
+            console.error('err:', e);
+        })
     }, []);
 
     //Todoタイトル更新
@@ -84,7 +86,7 @@ function TodoApp() {
     }
 
     //Todo更新
-    const handleOnUpdate = (id: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const handleOnUpdate = (id: number, e: React.ChangeEvent<FormControlElement>) => {
         const deepCopy = todos.map((todo) => ({ ...todo }));
 
         const newTodos = deepCopy.map((todo) => {
