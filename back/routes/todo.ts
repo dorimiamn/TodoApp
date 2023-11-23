@@ -62,6 +62,7 @@ router.post('/update', (req: Request, res: Response) => {
                 console.log('user :', user);
                 user.todo = param.todo;
                 user.save();
+                return res.status(200).end();
             }
         }).catch(err=>{
             console.error('err:', err);
