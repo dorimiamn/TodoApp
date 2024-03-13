@@ -3,7 +3,7 @@ services:
     build: .
     tty: true
     ports:
-      - 8000:8000
+      - 3001:3001
     volumes:
       - .:/app
       - ./node_modules:/app/node_modules
@@ -13,3 +13,12 @@ services:
     build: 
       context: "."
       dockerfile: "db.Dockerfile"
+    environment:
+      POSTGRES_DB: todo
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - todo-db-data:/var/lib/postgresql/data
+volumes:
+  todo-db-data:
+    external: true

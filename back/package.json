@@ -21,7 +21,7 @@
     "uuid": "^9.0.1"
   },
   "scripts": {
-    "start": "ts-node app.ts",
+    "start": "node --env-file=.env -r ts-node/register app.ts",
     "test": "jest"
   },
   "devDependencies": {
